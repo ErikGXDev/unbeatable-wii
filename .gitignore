@@ -1,0 +1,7 @@
+_wii/
+
+#vendored/*
+
+build/*
+
+beatmaps/*

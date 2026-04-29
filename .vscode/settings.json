@@ -1,0 +1,7 @@
+{
+  "cmake.configureArgs": [
+    "-DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Wii.cmake"
+  ],
+  "cmake.buildDirectory": "${workspaceFolder}/_wii",
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+}

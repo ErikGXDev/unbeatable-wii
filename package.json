@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "build": "./build.sh",
+    "build-and-run": "./build-and-run.sh",
+    "generate-data": "bun run scripts/build_objs.ts",
+    "clean-exports": "bun run scripts/clear_objs.ts"
+  }
+}

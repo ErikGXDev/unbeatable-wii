@@ -1,0 +1,20 @@
+{
+  "configurations": [
+    {
+      "name": "Wii",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "/opt/devkitpro/portlibs/wii/include/**",
+        "/opt/devkitpro/libogc/include/**",
+        "/opt/devkitpro/devkitPPC/powerpc-eabi/include/**"
+      ],
+      "defines": ["GEKKO", "HW_RVL"],
+      "compilerPath": "/opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "linux-gcc-powerpc",
+      "configurationProvider": "ms-vscode.cmake-tools"
+    }
+  ],
+  "version": 4
+}
