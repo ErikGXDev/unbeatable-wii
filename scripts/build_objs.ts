@@ -1,7 +1,7 @@
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from "fs";
 import { basename } from "path";
 
-const files = new Bun.Glob("assets/**/*.obj").scanSync();
+const files = new Bun.Glob("assets/exported/**/*.obj").scanSync();
 
 const outDir = "source/generated";
 const outPath = `${outDir}/exported.h`;
