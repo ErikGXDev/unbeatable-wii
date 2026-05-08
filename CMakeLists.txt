@@ -7,12 +7,19 @@ add_executable(${PROJECT_NAME})
 target_sources(${PROJECT_NAME} PRIVATE
 	source/main.c
 
+  source/ogg/oggplayer.c
+
+  source/util.c
+
   source/beatmaps.c
+  source/beatmap_index.c
   
   source/scene_arcade.c
   source/scene_train.c
   
 	source/sunlight.c
+
+  source/cjson/cJSON.c
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
@@ -20,7 +27,13 @@ target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
 target_include_directories(${PROJECT_NAME} PRIVATE
   include
   /opt/devkitpro/portlibs/wii/include
+  /opt/devkitpro/portlibs/ppc/include
   /opt/devkitpro/libogc/include
+)
+
+target_link_directories(${PROJECT_NAME} PRIVATE
+  /opt/devkitpro/portlibs/ppc/lib
+  /opt/devkitpro/portlibs/wii/lib
 )
 
 file(GLOB DATA_FILES data/*)
@@ -39,6 +52,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   bz2
   brotlidec
   brotlicommon
+  asnd
+  mad
+  vorbisidec
+  ogg
   fat
 )
 
