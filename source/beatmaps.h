@@ -1,5 +1,3 @@
-// Beatmap parser, soon in a github repo near you!
-
 #pragma once
 
 #include <stddef.h>
@@ -18,6 +16,9 @@ typedef struct Beatmap {
 
   char *audio_filename;
   char *cover_filename;
+
+  int level;
+  char *flavor_text;
 
   HitObject *hit_objects;
   int hit_object_count;
