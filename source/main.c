@@ -15,7 +15,8 @@
 #include <wiiuse/wpad.h>
 
 #include "main.h"
-#include "scene_arcade.h"
+#include "scene_manager.h"
+#include "transition.h"
 
 #include "arcade_12_12x20_png.h"
 #include "arcade_20_16x28_png.h"
@@ -60,7 +61,7 @@ int main()
 
     GRRLIB_Settings.antialias = true;
 
-    arcade_init_scene();
+    scene_manager_start(SCENE_ARCADE);
 
     while (SYS_MainLoop())
     {
@@ -86,10 +87,17 @@ int main()
         {
         }
         */
-        arcade_draw_scene();
+        scene_manager_draw();
+
+        transition_update();
+
+        GRRLIB_2dMode();
+        GRRLIB_Printf(100, 2, font_arcade_12, COLOR_CREAM, 1, "%u %u", GRRLIB_ScreenWidth, GRRLIB_ScreenHeight);
 
         GRRLIB_Render();
     }
+
+    scene_manager_shutdown();
 
     GRRLIB_FreeTexture(font_arcade_12);
     GRRLIB_FreeTexture(font_arcade_20);
