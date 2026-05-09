@@ -36,11 +36,17 @@
 #include "main.h"
 #include "beatmaps.h"
 
-#include "synth_mp3.h"
+#include "scene_manager.h"
 
 #include "beatmap_index.h"
 
 #include "util.h"
+
+#include "transition.h"
+
+#include "rhythm_controller.h"
+
+#include "switch_ogg.h"
 
 #define THEME_BG 249, 247, 213, 0xFF
 
@@ -110,6 +116,8 @@ int arcade_init_scene()
   arcade_update_slot();
   audio_load_timer = 30; // Load initial audio after half a second
 
+  GRRLIB_SetBackgroundColour(THEME_BG);
+
   return 1;
 
 error:
@@ -162,7 +170,7 @@ int arcade_draw_scene()
 {
   GRRLIB_2dMode();
 
-  if (WPAD_ButtonsDown(0) & WPAD_BUTTON_UP)
+  if (WPAD_ButtonsDown(0) & WPAD_BUTTON_UP && beatmap_count > 0 && !transition_in_progress())
   {
     selected_beatmap--;
     if (selected_beatmap < 0)
@@ -170,6 +178,7 @@ int arcade_draw_scene()
       selected_beatmap += beatmap_count;
     }
     StopOgg();
+    PlayOgg(switch_ogg, switch_ogg_size, 0, OGG_ONE_TIME);
     if (current_ogg_buffer)
     {
       free(current_ogg_buffer);
@@ -179,18 +188,25 @@ int arcade_draw_scene()
     audio_load_timer = 30; // Wait 30 frames (0.5s) before loading audio
   }
 
-  if (WPAD_ButtonsDown(0) & WPAD_BUTTON_DOWN)
+  if (WPAD_ButtonsDown(0) & WPAD_BUTTON_DOWN && beatmap_count > 0 && !transition_in_progress())
   {
     selected_beatmap++;
     selected_beatmap %= beatmap_count;
     StopOgg();
+    PlayOgg(switch_ogg, switch_ogg_size, 0, OGG_ONE_TIME);
     if (current_ogg_buffer)
     {
       free(current_ogg_buffer);
       current_ogg_buffer = NULL;
     }
     arcade_update_slot();
-    audio_load_timer = 10;
+    audio_load_timer = 30;
+  }
+
+  if (WPAD_ButtonsDown(0) & WPAD_BUTTON_A && beatmap_count > 0 && !transition_in_progress())
+  {
+    rhythm_controller_beatmap = beatmap_index[selected_beatmap];
+    scene_switch(SCENE_TRAIN);
   }
 
   if (audio_load_timer > 0)
@@ -202,8 +218,6 @@ int arcade_draw_scene()
     arcade_update_audio();
     audio_load_timer = -1;
   }
-
-  GRRLIB_SetBackgroundColour(THEME_BG);
 
   GRRLIB_Printf(420, -40, font_rubik_64, COLOR_ALPHA(COLOR_ACCENT, 20), 2, "SONG");
   GRRLIB_Printf(20, 400, font_rubik_64, COLOR_ALPHA(COLOR_ACCENT, 20), 2, "SELECT");
@@ -223,4 +237,20 @@ int arcade_draw_scene()
   }
 
   return 1;
+}
+
+void arcade_free_scene()
+{
+  if (current_cover)
+  {
+    GRRLIB_FreeTexture(current_cover);
+    current_cover = NULL;
+  }
+
+  if (current_ogg_buffer)
+  {
+    StopOgg();
+    free(current_ogg_buffer);
+    current_ogg_buffer = NULL;
+  }
 }
