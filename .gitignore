@@ -5,3 +5,7 @@ _wii/
 build/*
 
 beatmaps/*
+
+sd
+sd/**
+assets
