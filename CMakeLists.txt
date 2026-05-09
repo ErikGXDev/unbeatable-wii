@@ -11,13 +11,22 @@ target_sources(${PROJECT_NAME} PRIVATE
 
   source/util.c
 
+  source/delay.c
+
   source/beatmaps.c
   source/beatmap_index.c
+
+  source/rhythm_controller.c
   
   source/scene_arcade.c
   source/scene_train.c
+
+  source/transition.c
+  source/scene_manager.c
   
-	source/sunlight.c
+	source/draw_3d.c
+
+  source/generated/exported.c
 
   source/cjson/cJSON.c
 )
