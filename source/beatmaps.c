@@ -68,6 +68,9 @@ Beatmap *load_beatmap(const char *filename)
   bm->title = NULL;
   bm->difficulty = NULL;
   bm->audio_filename = NULL;
+  bm->cover_filename = NULL;
+  bm->level = 0;
+  bm->flavor_text = NULL;
 
   char cover_path[512];
   snprintf(cover_path, sizeof(cover_path), "sd:%s/cover.png", baseDir);
@@ -75,8 +78,12 @@ Beatmap *load_beatmap(const char *filename)
 
   bm->hit_objects = NULL;
   bm->hit_object_count = 0;
+  bm->zoom_objects = NULL;
+  bm->zoom_object_count = 0;
 
   char last_section[64] = {0};
+
+  int current_side = 1; // Start on the right side
 
   char line[2048];
   while (fgets(line, sizeof(line), fp))
@@ -169,13 +176,13 @@ Beatmap *load_beatmap(const char *filename)
       // Hold note
       // 205,192,169130,128,0,169862.3529399582:0:0:0:100:
 
-      int x, y, time, type;
+      int x, y, time, type, sample;
 
       // Shoutout to whoever invented this function
       // never saw a higher level language with something like this lol
-      int res = sscanf(line, "%d,%d,%d,%d", &x, &y, &time, &type);
+      int res = sscanf(line, "%d,%d,%d,%d,%d", &x, &y, &time, &type, &sample);
 
-      if (res != 4)
+      if (res != 5)
       {
         continue; // Skip weird lines
       }
@@ -194,13 +201,46 @@ Beatmap *load_beatmap(const char *filename)
 
       int lane = x * 6 / 512 + 1;
 
+      // Switch side
+      if (lane == 5)
+      {
+
+        int is_zoom = (sample == 2) ? 1 : 0; // Sample 2 is zoom, sample 0 is normal hit
+
+        if (!is_zoom)
+        {
+          current_side = 1 - current_side;
+        }
+
+        // new zoom object, no hitobject
+        ZoomObject new_zoom = {
+            .time = time,
+            .isZoom = is_zoom};
+
+        ZoomObject *temp_zoom = realloc(bm->zoom_objects, sizeof(ZoomObject) * (bm->zoom_object_count + 1));
+
+        if (!temp_zoom)
+        { // realloc failed
+          free_beatmap(bm);
+          fclose(fp);
+          return NULL;
+        }
+
+        bm->zoom_objects = temp_zoom;
+        bm->zoom_objects[bm->zoom_object_count] = new_zoom;
+        bm->zoom_object_count++;
+
+        continue; // No hitobject for this line, so skip the rest of the loop
+      }
+
       HitObject new_hitobject = {
           /* .x = x,
           .y = y, */
           .lane = lane,
           .time = time,
           .end_time = end_time,
-          .type = type};
+          .type = type,
+          .side = current_side};
 
       HitObject *temp = realloc(bm->hit_objects, sizeof(HitObject) * (bm->hit_object_count + 1));
 
@@ -233,5 +273,6 @@ void free_beatmap(Beatmap *bm)
   free(bm->cover_filename);
   free(bm->flavor_text);
   free(bm->hit_objects);
+  free(bm->zoom_objects);
   free(bm);
 }
