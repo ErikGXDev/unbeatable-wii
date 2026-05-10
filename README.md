@@ -21,3 +21,7 @@ You can use the `build` and `build-and-run` scripts to quickly build (and run) t
 `bun scripts/build_objs.ts` will scan for any .obj (+.mtl) file in assets/\* and convert all vertex and texture data into constants. Textures will automatically be copied to the `data` folder, which is bundled into the game.
 Objects that contain the name "marker" will only store position data.
 Output is at `source/generated/exported.h`.
+
+## License
+
+The code in this repository is licensed under MIT. All rights are reserved on custom-made assets like textures, models and sounds. All fonts used in this project are not custom-made and may follow a different license. Make sure to also check the license in `vendored/grrlib`, as it is a separate project.
